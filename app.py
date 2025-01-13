@@ -82,7 +82,8 @@ def tobs():
     most_recent_date = pd.to_datetime(most_recent_date)
     one_year_ago = most_recent_date - pd.Timedelta(days=365)
 
-    # Query the dates and temperature observations of the most-active station for the previous year of data.
+    # Dsiaply the dates and temperature observations of the most-active station for the previous year of data.
+    
     most_active_station = session.query(Measurement.station, func.count(Measurement.station)) \
         .group_by(Measurement.station) \
         .order_by(func.count(Measurement.station).desc()).first()[0]
@@ -112,14 +113,12 @@ def start_stats(start):
                 "error": f"Date out of range. Please use a date between {earliest_date} and {latest_date}."
             }), 404
 
-        # Query to calculate TMIN, TAVG, and TMAX from the start date to the end of the dataset
+        # Calculate TMIN, TAVG, and TMAX from the start date to the end of the dataset
         stats = session.query(
             func.min(Measurement.tobs).label("TMIN"),
             func.avg(Measurement.tobs).label("TAVG"),
             func.max(Measurement.tobs).label("TMAX")
         ).filter(Measurement.date >= start).all()
-
-        # Unpack the results
         tmin, tavg, tmax = stats[0]
 
         # Return the statistics as a dictionary
@@ -165,8 +164,6 @@ def start_end_stats(start, end):
             func.avg(Measurement.tobs).label("TAVG"),
             func.max(Measurement.tobs).label("TMAX")
         ).filter(Measurement.date >= start).filter(Measurement.date <= end).all()
-
-        # Unpack the results
         tmin, tavg, tmax = stats[0]
 
         # Return the statistics as a dictionary
